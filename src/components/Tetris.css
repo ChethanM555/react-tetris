@@ -1,0 +1,50 @@
+.grid-container {
+    margin: 100px auto;
+    max-width: 1000px;
+    display: grid;
+    grid-template-columns: 2fr 3fr 2fr;
+    gap: 10px;
+}
+
+.grid-container > div:nth-child(2) {
+    grid-row: span 2;
+}
+
+.grid-item {
+    margin: 10px;
+    padding: 10px;
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px, rgba(0, 0, 0, 0.06) 0px 0px 0px 1px;
+    border-radius: 10px;
+}
+
+.cell {
+    background: grey;
+    border-radius: 4px;
+    box-shadow: 2px 2px 2px 0 inset;
+}
+
+.grid-item h2 {
+    font-size: 2rem;
+}
+
+.grid-item h3 {
+    font-size: 1.5rem;
+}
+
+.score p{
+    border: 1px solid #000;
+}
+
+.btn-primary {
+    margin: 5px;
+    display: block;
+    width: 100px;
+}
+
+.menu {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin: 10px;
+}
