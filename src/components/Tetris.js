@@ -1,19 +1,23 @@
-import Score from "./Score";
-import Grid from "./Grid";
 import "./Tetris.css";
 import { Container, Button } from "react-bootstrap";
 import { useEffect, useState } from "react";
+import DisplayGrid from "./DisplayGrid";
+import MainGrid from "./MainGrid";
 
 const shapes = ["I", "O", "T", "S", "Z", "J", "L"];
-const colors = ["cyan", "yellow", "pink", "green", "red", "blue"];
-const levels = [1, 2, 3, 4, 5];
-const display_grid_dims = [6, 6];
-const display_grid_rows = 6;
-const display_grid_cols = 6;
-const grid_dims = [25, 12];
-const grid_rows = 25;
-const grid_cols = 12;
-const default_position = [-1, 5];
+const colors = [
+  "#FBCE05",
+  "#43D462",
+  "#3D76B5",
+  "#FF0128",
+  "#52B0FD",
+  "#A369B8",
+  "#1E2428",
+];
+const grid_dims = [14, 10];
+const grid_rows = 14;
+const grid_cols = 10;
+const default_position = [-1, 4];
 
 class ShapeView {
   constructor(shape, orientation, color, random = false) {
@@ -28,7 +32,7 @@ class ShapeView {
   setRandomShape() {
     this.shape = shapes[Math.floor(Math.random() * shapes.length)];
     this.color = colors[Math.floor(Math.random() * colors.length)];
-    this.orientation = Math.floor(Math.random() * 4);
+    this.orientation = 0;
   }
 }
 
@@ -236,21 +240,25 @@ function canShapeBePlacedAtPosition(
 }
 
 function getLowestPosition(shapeView, position, grid_dims, grid) {
-  let lowest_position = [grid_dims[0] - 1, position[1]];
+  let lowest_position = [position[0] + 1, position[1]];
   while (
-    !canShapeBePlacedAtPosition(shapeView, lowest_position, [], grid_dims, grid)
+    canShapeBePlacedAtPosition(
+      shapeView,
+      lowest_position,
+      getActivePositions(shapeView, position),
+      grid_dims,
+      grid
+    )
   ) {
-    lowest_position = [lowest_position[0] - 1, lowest_position[1]];
+    lowest_position = [lowest_position[0] + 1, lowest_position[1]];
   }
-  return lowest_position;
+  return [lowest_position[0] - 1, lowest_position[1]];
 }
 
 export default function Tetris() {
   const [started, setStarted] = useState(false);
   const [score, setScore] = useState(0);
-  const [level, setLevel] = useState(levels[0]);
   const [gameOver, setGameOver] = useState(false);
-  const lines = (score) => Math.floor(score / 100);
 
   const [grid, setGrid] = useState(
     new Array(grid_rows * grid_cols).fill("grey")
@@ -260,15 +268,6 @@ export default function Tetris() {
   const [shape, setShape] = useState(null);
   const [nextShape, setNextShape] = useState(null);
   const [holdShape, setHoldShape] = useState(null);
-
-  const toggleLevel = () => {
-    const index = levels.indexOf(level);
-    if (index === levels.length - 1) {
-      setLevel(levels[0]);
-    } else {
-      setLevel(levels[index + 1]);
-    }
-  };
 
   function renderShape(
     shapeView,
@@ -373,7 +372,6 @@ export default function Tetris() {
             if (scoreIncrease > 0) {
               setScore((prevScore) => prevScore + scoreIncrease);
               setGrid(newGrid);
-              setLevel((prevLevel) => prevLevel + 1);
             }
           }
         } else {
@@ -394,106 +392,124 @@ export default function Tetris() {
           setPosition(default_position);
           setNextShape(new ShapeView(null, null, null, true));
         }
-      }, 500 / level);
+      }, 500 / parseInt((score + 500) / 500));
       return () => clearInterval(interval);
     }
-  }, [started, level, position, nextShape]);
+  }, [started, position, nextShape]);
 
-  useEffect(() => {
-    const keyListener = (event) => {
-      let newShape = null;
-      let newPosition = null;
-      let lowestPosition = null;
-      if (event.key === "ArrowRight") {
-        newShape = new ShapeView(shape.shape, shape.orientation, shape.color);
-        newPosition = [position[0], position[1] + 1];
-      } else if (event.key === "ArrowLeft") {
-        newShape = new ShapeView(shape.shape, shape.orientation, shape.color);
-        newPosition = [position[0], position[1] - 1];
-      } else if (event.key === "ArrowDown") {
-        newShape = new ShapeView(shape.shape, shape.orientation, shape.color);
-        newPosition = getLowestPosition(shape, position, grid_dims, grid);
-        lowestPosition = newPosition;
-      } else if (event.key === "a") {
-        newShape = new ShapeView(
-          shape.shape,
-          (shape.orientation + 1) % 4,
-          shape.color
-        );
-        newPosition = [...position];
-      } else if (event.key === "d") {
-        newShape = new ShapeView(
-          shape.shape,
-          (4 + shape.orientation - 1) % 4,
-          shape.color
-        );
-        newPosition = [...position];
-      } else if (event.key === "s") {
-        if (holdShape === null) {
-          newShape = nextShape;
-          newPosition = [default_position[0] + 2, default_position[1]];
-          setNextShape(new ShapeView(null, null, null, true));
-          setHoldShape(shape);
-        } else if (
-          canShapeBePlacedAtPosition(
-            holdShape,
-            position,
-            getActivePositions(shape, position),
-            grid_dims,
-            grid
-          )
-        ) {
-          newShape = holdShape;
-          newPosition = [...position];
-          setHoldShape(shape);
-        }
-      } else {
-        newShape = new ShapeView(shape.shape, shape.orientation, shape.color);
-        newPosition = position;
-      }
-
-      if (
-        (event.key === "ArrowRight" ||
-          event.key === "ArrowLeft" ||
-          event.key === "ArrowDown" ||
-          event.key === "a" ||
-          event.key === "d" ||
-          event.key === "s") &&
+  const keyListener = (event) => {
+    if (!started) return;
+    let newShape = null;
+    let newPosition = null;
+    let lowestPosition = null;
+    if (event.key === "ArrowRight" || event.currentTarget.id === "right") {
+      newShape = new ShapeView(shape.shape, shape.orientation, shape.color);
+      newPosition = [position[0], position[1] + 1];
+      document.getElementById("right").classList.add("pressed");
+    } else if (event.key === "ArrowLeft" || event.currentTarget.id === "left") {
+      newShape = new ShapeView(shape.shape, shape.orientation, shape.color);
+      newPosition = [position[0], position[1] - 1];
+      document.getElementById("left").classList.add("pressed");
+    } else if (event.key === "ArrowDown" || event.currentTarget.id === "down") {
+      newShape = new ShapeView(shape.shape, shape.orientation, shape.color);
+      newPosition = getLowestPosition(shape, position, grid_dims, grid);
+      lowestPosition = newPosition;
+      document.getElementById("down").classList.add("pressed");
+    } else if (event.key === "ArrowUp" || event.currentTarget.id === "up") {
+      document.getElementById("up").classList.add("pressed");
+      if (holdShape === null) {
+        newShape = nextShape;
+        newPosition = [default_position[0] + 2, default_position[1]];
+        setNextShape(new ShapeView(null, null, null, true));
+        setHoldShape(shape);
+      } else if (
         canShapeBePlacedAtPosition(
-          newShape,
-          newPosition,
+          holdShape,
+          position,
           getActivePositions(shape, position),
           grid_dims,
           grid
         )
       ) {
-        const renderedGrid = renderShape(
-          newShape,
-          grid_dims,
-          newPosition,
-          getActivePositions(shape, position),
-          grid,
-          setGrid
-        );
-        setShape(newShape);
-        setPosition(newPosition);
-        if (lowestPosition !== null) {
-          const { scoreIncrease, newGrid } = clearLines(renderedGrid);
-          if (scoreIncrease > 0) {
-            setScore((prevScore) => prevScore + scoreIncrease);
-            setGrid(newGrid);
-          }
+        newShape = holdShape;
+        newPosition = [...position];
+        setHoldShape(shape);
+      }
+    } else if (event.key === " " || event.currentTarget.id === "space") {
+      document.getElementById("space").classList.add("pressed");
+      newShape = new ShapeView(
+        shape.shape,
+        (4 + shape.orientation - 1) % 4,
+        shape.color
+      );
+      newPosition = [...position];
+    } else {
+      newShape = new ShapeView(shape.shape, shape.orientation, shape.color);
+      newPosition = position;
+    }
+
+    if (
+      (event.key === "ArrowRight" ||
+        event.currentTarget.id === "right" ||
+        event.key === "ArrowLeft" ||
+        event.currentTarget.id === "left" ||
+        event.key === "ArrowDown" ||
+        event.currentTarget.id === "down" ||
+        event.key === "ArrowUp" ||
+        event.currentTarget.id === "up" ||
+        event.key === " " ||
+        event.currentTarget.id === "space") &&
+      canShapeBePlacedAtPosition(
+        newShape,
+        newPosition,
+        getActivePositions(shape, position),
+        grid_dims,
+        grid
+      )
+    ) {
+      const renderedGrid = renderShape(
+        newShape,
+        grid_dims,
+        newPosition,
+        getActivePositions(shape, position),
+        grid,
+        setGrid
+      );
+      setShape(newShape);
+      setPosition(newPosition);
+      if (lowestPosition !== null) {
+        const { scoreIncrease, newGrid } = clearLines(renderedGrid);
+        if (scoreIncrease > 0) {
+          setScore((prevScore) => prevScore + scoreIncrease);
+          setGrid(newGrid);
         }
       }
-    };
-    // add listners to keyboard keys
-    if (started) {
-      document.addEventListener("keyup", keyListener);
     }
+  };
+
+  useEffect(() => {
+    // add listners to keyboard keys
+    document.addEventListener("keydown", keyListener);
     return () => {
-      document.removeEventListener("keyup", keyListener);
+      document.removeEventListener("keydown", keyListener);
     };
   }, [started, shape, position, grid]);
+
+  useEffect(() => {
+    document.addEventListener("keyup", (event) => {
+      if (event.key === "ArrowRight") {
+        document.getElementById("right").classList.remove("pressed");
+      } else if (event.key === "ArrowLeft") {
+        document.getElementById("left").classList.remove("pressed");
+      } else if (event.key === "ArrowDown") {
+        document.getElementById("down").classList.remove("pressed");
+      } else if (event.key === "ArrowUp") {
+        document.getElementById("up").classList.remove("pressed");
+      } else if (event.key === " ") {
+        document.getElementById("space").classList.remove("pressed");
+      }
+    });
+  });
 
   const resetGame = () => {
     setGrid(new Array(grid_rows * grid_cols).fill("grey"));
@@ -502,53 +518,109 @@ export default function Tetris() {
     setNextShape(null);
     setHoldShape(null);
     setScore(0);
-    setLevel(1);
     setStarted(false);
     setGameOver(false);
   };
 
+  const handleMouseUp = (event) => {
+    document.getElementById(event.currentTarget.id).classList.remove("pressed");
+  };
+
   return (
     <>
-      <Container className="grid-container">
-        <div className="grid-item">
-          <h3>Hold</h3>
-          <Grid
-            rows={display_grid_rows}
-            columns={display_grid_cols}
-            gridState={renderShape(holdShape, display_grid_dims, [2, 2])}
-          />
+      <Container id="tetris">
+        <div className="grid-container">
+          <div>NEXT</div>
+          <div>HOLD</div>
+          <div>SCORE</div>
+          <div className="d-flex justify-content-around align-items-center">
+            <DisplayGrid shapeView={holdShape} />
+            <DisplayGrid shapeView={nextShape} />
+          </div>
+          <div className="d-flex justify-content-center align-items-center">
+            {score}
+          </div>
+          <div>
+            {gameOver ? (
+              <div className="menu">
+                <h2>Game Over</h2>
+                <Button variant="primary" onClick={resetGame}>
+                  Restart
+                </Button>
+              </div>
+            ) : started ? (
+              <MainGrid grid_dims={grid_dims} grid_state={grid} />
+            ) : (
+              <div className="menu">
+                <h2>Tetris</h2>
+                <Button variant="primary" onClick={() => setStarted(true)}>
+                  Start
+                </Button>
+              </div>
+            )}
+          </div>
+          <div className="btn-grp">
+            <button
+              className="rounded-circle p-3 action-btn arrow-btn"
+              id="up"
+              onMouseDown={keyListener}
+              onMouseUp={handleMouseUp}
+            >
+              <img
+                src="https://img.icons8.com/ios-filled/50/chevron-left.png"
+                alt="up"
+              />
+            </button>
+            <button
+              className="rounded-circle p-3 action-btn arrow-btn"
+              id="left"
+              onMouseDown={keyListener}
+              onMouseUp={handleMouseUp}
+            >
+              <img
+                src="https://img.icons8.com/ios-filled/50/chevron-left.png"
+                alt="left"
+              />
+            </button>
+            <button
+              className="rounded-circle p-3 action-btn arrow-btn"
+              id="right"
+              onMouseDown={keyListener}
+              onMouseUp={handleMouseUp}
+            >
+              <img
+                src="https://img.icons8.com/ios-filled/50/chevron-left.png"
+                alt="right"
+              />
+            </button>
+            <button
+              className="rounded-circle p-3 action-btn arrow-btn"
+              id="down"
+              onMouseDown={keyListener}
+              onMouseUp={handleMouseUp}
+            >
+              <img
+                src="https://img.icons8.com/ios-filled/50/chevron-left.png"
+                alt="down"
+              />
+            </button>
+          </div>
+          <div>
+            <button
+              className="rounded-circle p-3 mt-3 action-btn rotate-btn"
+              id="space"
+              onMouseDown={keyListener}
+              onMouseUp={handleMouseUp}
+            >
+              <img
+                height={30}
+                width={30}
+                src="https://img.icons8.com/tiny-glyph/64/rotate.png"
+                alt="rotate"
+              />
+            </button>
+          </div>
         </div>
-        <div className="grid-item">
-          {gameOver ? (
-            <div className="menu">
-              <h2>Game Over</h2>
-              <Button variant="primary" onClick={resetGame}>
-                Restart
-              </Button>
-            </div>
-          ) : started ? (
-            <Grid rows={grid_rows} columns={grid_cols} gridState={grid} />
-          ) : (
-            <div className="menu">
-              <h2>Tetris</h2>
-              <Button variant="primary" onClick={() => setStarted(true)}>
-                Start
-              </Button>
-              <Button variant="primary" onClick={toggleLevel}>
-                Level: {level}
-              </Button>
-            </div>
-          )}
-        </div>
-        <div className="grid-item">
-          <h3>Next</h3>
-          <Grid
-            rows={display_grid_rows}
-            columns={display_grid_cols}
-            gridState={renderShape(nextShape, display_grid_dims, [2, 2])}
-          />
-        </div>
-        <Score score={score} lines={lines} level={level} />
       </Container>
     </>
   );
