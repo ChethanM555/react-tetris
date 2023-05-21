@@ -178,6 +178,11 @@
 
 .action-btn.dark {
   box-shadow: var(--nm-medium-dark);
+  /* invert image color */
+}
+
+.action-btn.dark > img {
+  filter: invert(1);
 }
 
 .action-btn:active, .action-btn.pressed {
