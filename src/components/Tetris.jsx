@@ -77,15 +77,13 @@ function getActivePositions(shapeView, position) {
           active_positions.push(position);
           active_positions.push([position[0], position[1] + 1]);
           active_positions.push([position[0] + 1, position[1] + 1]);
-          active_positions.push([position[0] + 2, position[1] + 1]);
-          active_positions.push([position[0] + 2, position[1] + 2]);
+          active_positions.push([position[0] + 1, position[1] + 2]);
           break;
         case 1:
         case 3:
-          active_positions.push([position[0], position[1] + 2]);
+          active_positions.push([position[0], position[1] + 1]);
           active_positions.push([position[0] + 1, position[1]]);
           active_positions.push([position[0] + 1, position[1] + 1]);
-          active_positions.push([position[0] + 1, position[1] + 2]);
           active_positions.push([position[0] + 2, position[1]]);
           break;
         default:
@@ -99,16 +97,14 @@ function getActivePositions(shapeView, position) {
           active_positions.push(position);
           active_positions.push([position[0] + 1, position[1]]);
           active_positions.push([position[0] + 1, position[1] + 1]);
-          active_positions.push([position[0] + 1, position[1] + 2]);
-          active_positions.push([position[0] + 2, position[1] + 2]);
+          active_positions.push([position[0] + 2, position[1] + 1]);
           break;
         case 1:
         case 3:
           active_positions.push([position[0], position[1] + 1]);
           active_positions.push([position[0], position[1] + 2]);
+          active_positions.push([position[0] + 1, position[1]]);
           active_positions.push([position[0] + 1, position[1] + 1]);
-          active_positions.push([position[0] + 2, position[1]]);
-          active_positions.push([position[0] + 2, position[1] + 1]);
           break;
         default:
           break;

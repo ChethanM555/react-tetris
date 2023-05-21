@@ -7,8 +7,8 @@ export default function DisplayGrid({ shapeView, theme }) {
     [2, 3],
     [2, 2],
     [2, 3],
-    [3, 3],
-    [3, 3],
+    [2, 3],
+    [2, 3],
   ];
   let active_positions = [
     [[1, 1, 1, 1]],
@@ -29,14 +29,12 @@ export default function DisplayGrid({ shapeView, theme }) {
       [1, 1, 1],
     ],
     [
-      [1, 0, 0],
-      [1, 1, 1],
-      [0, 0, 1],
+      [1, 1, 0],
+      [0, 1, 1],
     ],
     [
-      [0, 0, 1],
-      [1, 1, 1],
-      [1, 0, 0],
+      [0, 1, 1],
+      [1, 1, 0],
     ],
   ];
   // for each shape create a grid
