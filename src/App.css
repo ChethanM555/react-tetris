@@ -1,5 +1,10 @@
 @import url('https://fonts.googleapis.com/css2?family=Play&display=swap');
 
+@font-face {
+    font-family: 'CyberPunk';
+    src: url('assets\\fonts\\Feturo-w1E9w.woff') format('woff')
+}
+
 :root {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
@@ -24,9 +29,9 @@
   --nm-medium-inset: inset 2px 2px 6px 0 rgba(0, 0, 0, 0.2), inset -2px -2px 6px 0 rgba(255, 255, 255, 1);
   --nm-small: 2px 2px 6px 0 rgba(0, 0, 0, 0.4), -2px -2px 4px 0 rgba(255, 255, 255, 1);
 
-  --nm-dark: 10px 10px 20px 0 rgba(0, 0, 0, 1), -10px -10px 20px 0 rgba(255, 255, 255, 0.2);
+  --nm-dark: 8px 8px 15px 0 rgba(0, 0, 0, 0.6), -8px -8px 15px 0 rgba(255, 255, 255, 0.2);
   --nm-inset-dark: inset 4px 4px 8px 0 rgba(0, 0, 0, 0.6), inset -4px -4px 8px 0 rgba(255, 255, 255, 0.2);
-  --nm-medium-dark: 5px 5px 10px 0 rgba(0, 0, 0, 1), -5px -5px 10px 0 rgba(255, 255, 255, 0.2);
+  --nm-medium-dark: 5px 5px 10px 0 rgba(0, 0, 0, 0.8), -5px -5px 10px 0 rgba(255, 255, 255, 0.2);
   --nm-medium-inset-dark: inset 2px 2px 6px 0 rgba(0, 0, 0, 1), inset -2px -2px 6px 0 rgba(255, 255, 255, 0.2);
   --nm-small-dark: 2px 2px 6px 0 rgba(0, 0, 0, 1), -2px -2px 4px 0 rgba(255, 255, 255, 0.4);
 }
@@ -39,14 +44,16 @@ body {
   min-height: 100vh;
 }
 
-#root {
-    width: 100%;
-    padding: 2rem;
+.App {
+    padding: 1rem;
+    width: 100vw;
+    height: 100vh;
+    align-self: center;
     text-align: center;
     background-color: var(--bg-color) !important;
 }
 
-#root.dark {
+.App.dark {
   background-color: var(--bg-color-dark) !important;
   color: rgb(255, 255, 255) !important;
 }

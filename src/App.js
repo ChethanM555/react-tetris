@@ -5,7 +5,11 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { useState } from "react";
 
 function App() {
-  const [theme, setTheme] = useState("light");
+  //get theme from system setting
+  const systemTheme = window.matchMedia(
+    "(prefers-color-scheme: light)"
+  ).matches;
+  const [theme, setTheme] = useState(systemTheme ? "light" : "dark");
 
   const handleThemeChange = () => {
     setTheme(theme === "light" ? "dark" : "light");
@@ -17,7 +21,7 @@ function App() {
   };
 
   return (
-    <div className="App">
+    <div className={theme === "light" ? "App" : "App dark"}>
       <Navbar className="d-flex justify-content-between">
         <Navbar.Brand
           href="#home"

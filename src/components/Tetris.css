@@ -1,3 +1,22 @@
+/* Menu styles */
+.menu {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
+.menu > h2 {
+  font-family: 'CyberPunk', sans-serif;
+  font-size: 70px;
+}
+
+.menu > button {
+  font-family: 'Play', sans-serif;
+  letter-spacing: 0.2em;
+}
+
 /* Main container styles */
 
 #tetris {
@@ -102,6 +121,7 @@
 
 .cell-border.dark {
   box-shadow: var(--nm-small-dark);
+  opacity: 0.8;
 }
 
 .btn-grp {

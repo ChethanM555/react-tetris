@@ -521,7 +521,7 @@ export default function Tetris({ theme }) {
     setNextShape(null);
     setHoldShape(null);
     setScore(0);
-    setStarted(false);
+    setStarted(true);
     setGameOver(false);
   };
 
@@ -555,8 +555,11 @@ export default function Tetris({ theme }) {
             {gameOver ? (
               <div className="menu">
                 <h2>Game Over</h2>
-                <Button variant="primary" onClick={resetGame}>
-                  Restart
+                <Button
+                  variant={theme === "light" ? "outline-dark" : "outline-light"}
+                  onClick={resetGame}
+                >
+                  RESTART
                 </Button>
               </div>
             ) : started ? (
@@ -564,8 +567,11 @@ export default function Tetris({ theme }) {
             ) : (
               <div className="menu">
                 <h2>Tetris</h2>
-                <Button variant="primary" onClick={() => setStarted(true)}>
-                  Start
+                <Button
+                  variant={theme === "light" ? "outline-dark" : "outline-light"}
+                  onClick={() => setStarted(true)}
+                >
+                  START
                 </Button>
               </div>
             )}
