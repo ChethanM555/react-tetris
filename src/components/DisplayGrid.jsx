@@ -1,4 +1,4 @@
-export default function DisplayGrid({ shapeView }) {
+export default function DisplayGrid({ shapeView, theme }) {
   let shapes = ["I", "J", "L", "O", "T", "S", "Z"];
   // for each shape create grid dimensions
   let grid_dims = [
@@ -43,6 +43,9 @@ export default function DisplayGrid({ shapeView }) {
   let shape = null;
   let cells = [];
   let grid_dim = [0, 0];
+  let cellStyle = `rounded-sm cell-small cell-border ${
+    theme === "light" ? "" : "dark"
+  }`;
   if (shapeView !== null) {
     for (var i = 0; i < shapes.length; i++) {
       if (shapes[i] === shapeView.shape) {
@@ -52,7 +55,7 @@ export default function DisplayGrid({ shapeView }) {
             if (cell === 1) {
               return (
                 <div
-                  className="rounded-sm cell-small cell-border"
+                  className={cellStyle}
                   style={{ background: shapeView.color }}
                   key={row_index * grid_dim[1] + col_index}
                 ></div>

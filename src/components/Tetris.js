@@ -5,36 +5,10 @@ import DisplayGrid from "./DisplayGrid";
 import MainGrid from "./MainGrid";
 
 const shapes = ["I", "O", "T", "S", "Z", "J", "L"];
-const colors = [
-  "#FBCE05",
-  "#43D462",
-  "#3D76B5",
-  "#FF0128",
-  "#52B0FD",
-  "#A369B8",
-  "#1E2428",
-];
 const grid_dims = [14, 10];
 const grid_rows = 14;
 const grid_cols = 10;
 const default_position = [-1, 4];
-
-class ShapeView {
-  constructor(shape, orientation, color, random = false) {
-    this.shape = shape;
-    this.orientation = orientation;
-    this.color = color;
-    if (random) {
-      this.setRandomShape();
-    }
-  }
-
-  setRandomShape() {
-    this.shape = shapes[Math.floor(Math.random() * shapes.length)];
-    this.color = colors[Math.floor(Math.random() * colors.length)];
-    this.orientation = 0;
-  }
-}
 
 function getActivePositions(shapeView, position) {
   const active_positions = [];
@@ -255,7 +229,35 @@ function getLowestPosition(shapeView, position, grid_dims, grid) {
   return [lowest_position[0] - 1, lowest_position[1]];
 }
 
-export default function Tetris() {
+export default function Tetris({ theme }) {
+  class ShapeView {
+    constructor(shape, orientation, color, random = false) {
+      this.shape = shape;
+      this.orientation = orientation;
+      this.color = color;
+      if (random) {
+        this.setRandomShape();
+      }
+    }
+
+    setRandomShape() {
+      this.shape = shapes[Math.floor(Math.random() * shapes.length)];
+      this.color = colors[Math.floor(Math.random() * colors.length)];
+      this.orientation = 0;
+    }
+  }
+
+  var cell_color = theme === "light" ? "#1E2428" : "#EDEAE9";
+  const colors = [
+    "#FBCE05",
+    "#43D462",
+    "#3D76B5",
+    "#FF0128",
+    "#52B0FD",
+    "#A369B8",
+    cell_color,
+  ];
+
   const [started, setStarted] = useState(false);
   const [score, setScore] = useState(0);
   const [gameOver, setGameOver] = useState(false);
@@ -526,16 +528,24 @@ export default function Tetris() {
     document.getElementById(event.currentTarget.id).classList.remove("pressed");
   };
 
+  const buttonStyleClass = `rounded-circle p-3 action-btn arrow-btn ${
+    theme === "light" ? "" : "dark"
+  }`;
+
   return (
     <>
-      <Container id="tetris">
-        <div className="grid-container">
+      <Container id="tetris" className={theme === "light" ? "" : "dark"}>
+        <div
+          className={
+            theme === "light" ? "grid-container" : "grid-container dark"
+          }
+        >
           <div>NEXT</div>
           <div>HOLD</div>
           <div>SCORE</div>
           <div className="d-flex justify-content-around align-items-center">
-            <DisplayGrid shapeView={holdShape} />
-            <DisplayGrid shapeView={nextShape} />
+            <DisplayGrid shapeView={holdShape} theme={theme} />
+            <DisplayGrid shapeView={nextShape} theme={theme} />
           </div>
           <div className="d-flex justify-content-center align-items-center">
             {score}
@@ -549,7 +559,7 @@ export default function Tetris() {
                 </Button>
               </div>
             ) : started ? (
-              <MainGrid grid_dims={grid_dims} grid_state={grid} />
+              <MainGrid grid_dims={grid_dims} grid_state={grid} theme={theme} />
             ) : (
               <div className="menu">
                 <h2>Tetris</h2>
@@ -561,7 +571,7 @@ export default function Tetris() {
           </div>
           <div className="btn-grp">
             <button
-              className="rounded-circle p-3 action-btn arrow-btn"
+              className={buttonStyleClass}
               id="up"
               onMouseDown={keyListener}
               onMouseUp={handleMouseUp}
@@ -572,7 +582,7 @@ export default function Tetris() {
               />
             </button>
             <button
-              className="rounded-circle p-3 action-btn arrow-btn"
+              className={buttonStyleClass}
               id="left"
               onMouseDown={keyListener}
               onMouseUp={handleMouseUp}
@@ -583,7 +593,7 @@ export default function Tetris() {
               />
             </button>
             <button
-              className="rounded-circle p-3 action-btn arrow-btn"
+              className={buttonStyleClass}
               id="right"
               onMouseDown={keyListener}
               onMouseUp={handleMouseUp}
@@ -594,7 +604,7 @@ export default function Tetris() {
               />
             </button>
             <button
-              className="rounded-circle p-3 action-btn arrow-btn"
+              className={buttonStyleClass}
               id="down"
               onMouseDown={keyListener}
               onMouseUp={handleMouseUp}
@@ -607,7 +617,9 @@ export default function Tetris() {
           </div>
           <div>
             <button
-              className="rounded-circle p-3 mt-3 action-btn rotate-btn"
+              className={`rounded-circle p-3 mt-3 action-btn rotate-btn ${
+                theme === "light" ? "" : "dark"
+              }`}
               id="space"
               onMouseDown={keyListener}
               onMouseUp={handleMouseUp}

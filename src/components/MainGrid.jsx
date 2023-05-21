@@ -1,4 +1,4 @@
-export default function MainGrid({ grid_dims, grid_state }) {
+export default function MainGrid({ grid_dims, grid_state, theme }) {
   var rows = grid_dims[0];
   var cols = grid_dims[1];
 
@@ -15,7 +15,9 @@ export default function MainGrid({ grid_dims, grid_state }) {
     if (grid_state[i] !== "grey") {
       cells.push(
         <div
-          className="rounded-sm cell cell-border"
+          className={`rounded-sm cell cell-border ${
+            theme === "light" ? "" : "dark"
+          }`}
           style={{ background: grid_state[i] }}
           key={i}
         ></div>
