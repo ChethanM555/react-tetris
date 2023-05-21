@@ -1,4 +1,4 @@
-import { Navbar, Button } from "react-bootstrap";
+import { Navbar } from "react-bootstrap";
 import "./App.css";
 import Tetris from "./components/Tetris";
 import "bootstrap/dist/css/bootstrap.min.css";
