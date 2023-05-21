@@ -438,6 +438,7 @@ export default function Tetris({ theme }) {
         setHoldShape(shape);
       }
     } else if (event.key === " " || event.currentTarget.id === "space") {
+      event.preventDefault();
       document.getElementById("space").classList.add("pressed");
       newShape = new ShapeView(
         shape.shape,
